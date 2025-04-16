@@ -63,14 +63,19 @@ def software_reset(bus: int = 1):
 class PCA9685(object):
     """PCA9685 PWM LED/servo controller."""
 
-    def __init__(self, bus: int = 1, address = PCA9685_ADDRESS):
+    def __init__(self, bus: int = 1, address = PCA9685_ADDRESS, open_drain: bool = False):
         """Initialize the PCA9685."""
 
         self._address = address
         # Setup I2C interface for the device.
         self._bus = SMBus(bus)
         self.set_all_pwm(0, 0)
-        self._bus.write_byte_data(self._address, MODE2, OUTDRV)
+        if (open_drain):
+            logger.debug('Using open drain output')
+            self._bus.write_byte_data(self._address, MODE2, INVRT) # INVRT = 1, OUTDRV = 0
+        else:
+            logger.debug('Using push-pull output')
+            self._bus.write_byte_data(self._address, MODE2, OUTDRV) # INVRT = 0, OUTDRV = 1
         self._bus.write_byte_data(self._address, MODE1, ALLCALL)
         time.sleep(0.005)  # wait for oscillator
         mode1 = self._bus.read_byte_data(self._address, MODE1)
