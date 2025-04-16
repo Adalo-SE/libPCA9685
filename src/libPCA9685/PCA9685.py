@@ -63,7 +63,7 @@ def software_reset(bus: int = 1):
 class PCA9685(object):
     """PCA9685 PWM LED/servo controller."""
 
-    def __init__(self, bus: int = 1, address = PCA9685_ADDRESS, open_drain: bool = False):
+    def __init__(self, bus: int = 1, address: int = PCA9685_ADDRESS, open_drain: bool = False):
         """Initialize the PCA9685."""
 
         self._address = address
@@ -72,10 +72,10 @@ class PCA9685(object):
         self.set_all_pwm(0, 0)
         if (open_drain):
             logger.debug('Using open drain output')
-            self._bus.write_byte_data(self._address, MODE2, INVRT) # INVRT = 1, OUTDRV = 0
+            self._bus.write_byte_data(self._address, MODE2, INVRT)  # INVRT = 1, OUTDRV = 0
         else:
             logger.debug('Using push-pull output')
-            self._bus.write_byte_data(self._address, MODE2, OUTDRV) # INVRT = 0, OUTDRV = 1
+            self._bus.write_byte_data(self._address, MODE2, OUTDRV)  # INVRT = 0, OUTDRV = 1
         self._bus.write_byte_data(self._address, MODE1, ALLCALL)
         time.sleep(0.005)  # wait for oscillator
         mode1 = self._bus.read_byte_data(self._address, MODE1)
@@ -85,21 +85,21 @@ class PCA9685(object):
 
     def set_pwm_freq(self, freq_hz):
         """Set the PWM frequency to the provided value in hertz."""
-        prescaleval = 25000000.0    # 25MHz
-        prescaleval /= 4096.0       # 12-bit
-        prescaleval /= float(freq_hz)
-        prescaleval -= 1.0
+        prescale_val = 25000000.0    # 25MHz
+        prescale_val /= 4096.0       # 12-bit
+        prescale_val /= float(freq_hz)
+        prescale_val -= 1.0
         logger.debug('Setting PWM frequency to {0} Hz'.format(freq_hz))
-        logger.debug('Estimated pre-scale: {0}'.format(prescaleval))
-        prescale = int(math.floor(prescaleval + 0.5))
+        logger.debug('Estimated pre-scale: {0}'.format(prescale_val))
+        prescale = int(math.floor(prescale_val + 0.5))
         logger.debug('Final pre-scale: {0}'.format(prescale))
-        oldmode = self._bus.read_byte_data(self._address, MODE1)
-        newmode = (oldmode & 0x7F) | 0x10    # sleep
-        self._bus.write_byte_data(self._address, MODE1, newmode)  # go to sleep
+        old_mode = self._bus.read_byte_data(self._address, MODE1)
+        new_mode = (old_mode & 0x7F) | 0x10    # sleep
+        self._bus.write_byte_data(self._address, MODE1, new_mode)  # go to sleep
         self._bus.write_byte_data(self._address, PRESCALE, prescale)
-        self._bus.write_byte_data(self._address, MODE1, oldmode)
+        self._bus.write_byte_data(self._address, MODE1, old_mode)
         time.sleep(0.005)
-        self._bus.write_byte_data(self._address, MODE1, oldmode | 0x80)
+        self._bus.write_byte_data(self._address, MODE1, old_mode | 0x80)
 
     def set_pwm(self, channel, on, off):
         """Sets a single PWM channel."""
