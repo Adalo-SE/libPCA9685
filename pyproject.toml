@@ -1,0 +1,21 @@
+[project]
+name = "libPCA9685"
+version = "0.0.1"
+authors = [
+  { name="Gunnar Strömme", email="gunnar@adalo.se" },
+]
+dependencies = [
+    "Adafruit-GPIO==1.0.3",
+]
+description = "RPi driver for the PCA9685 16-channel PWM driver"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: Linux",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/Adalo-SE/libPCA9685"
+"Bug Tracker" = "https://github.com/Adalo-SE/libPCA9685/issues"
